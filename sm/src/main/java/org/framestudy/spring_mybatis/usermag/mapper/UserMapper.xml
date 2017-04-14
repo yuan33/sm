@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace 命名空间
+1、分类的作用，避免Sql语句重复
+2、就是与我们JAVA接口关联
+ -->
+<mapper namespace="org.framestudy.spring_mybatis.usermag.mapper.UserMapper">
+	<resultMap type="UserInfo" id="userMap">
+		<id property="id" column="id" javaType="java.lang.Long"/>
+		<result property="userName" column="user_name" javaType="java.lang.String"/>
+		<result property="loginName" column="login_name" javaType="java.lang.String"/>
+		<result property="pwd" column="password" javaType="java.lang.String"/>
+		<result property="age" column="age" javaType="int"/>
+	</resultMap>
+	
+	
+	<!-- id属性定义着接口方法的名称 -->
+	<insert id="saveUserInfo" useGeneratedKeys="true" keyProperty="id">
+		<!-- 在mybatis框架中，取值方式有2种：第一种是#{}，第二种是${}
+		第一个区别在于：#取值的时候，会在参数的两侧添加''单引号
+		然而$取值的时候，则不会添加''单引号
+		
+		第二个区别在于：#取值，编译方式采用预编译，$取值，编译方式直接才编译（可能会有
+		SQL注入的危险）
+		 -->
+		insert into t_user (user_name,password,age) values (#{userName},#{pwd},${age})
+	</insert>
+
+
+	<!-- 批量新增，标准语法是：insert into 表（字段……）values (),(),…… -->
+	<insert id="batchSaveUserInfo" parameterType="java.util.List">
+		insert into t_user (user_name,password,age,login_name) values 
+		<foreach collection="users" item="user" separator=",">
+			(#{user.userName},#{user.pwd},#{user.age},#{user.loginName})
+		</foreach>
+	</insert>
+
+	<update id="updateUserInfo" parameterType="UserInfo">
+<!-- 		update t_user set user_name = #{u.userName},password = #{u.pwd},age=#{u.age} where id = #{u.id}
+ -->	
+ 	update t_user 
+ 	<set>
+ 		<if test="u.userName != null">
+ 			user_name = #{u.userName},
+ 		</if>
+ 		<if test="u.pwd != null">
+ 			password = #{u.pwd},
+ 		</if>
+ 		<if test="u.age != null">
+ 			age=#{u.age},
+ 		</if>
+ 	</set>
+ 
+ 	<where>
+ 		id = #{u.id}
+ 	</where>
+ </update>
+
+	<delete id="deleteUserInfo">
+		delete from t_user where id = #{id}
+	</delete>
+
+	<delete id="batchDeleteUserInfo">
+		delete from t_user where id in 
+		<foreach collection="users" item="user" open="(" close=")" separator=",">
+		#{user.id}
+		</foreach>
+	</delete>
+
+	<select id="countUserListByMapToPager" resultType="int">
+		select count(id) from t_user 
+		<include refid="commonSql"></include>
+	</select>
+
+	
+	<select id="getUserListByMapToPager" resultMap="userMap">
+	select * from t_user 
+		<include refid="commonSql"></include>
+		<!-- limit 后第一个参数是数据库的起始位置，
+		第二个参数每页需要显示的行数 -->
+		<!-- order by 必须要定义在limit之前 -->
+		order by id desc limit #{map.index},#{map.rows};
+	</select>
+
+
+	<sql id="commonSql">
+		<!-- where标签出现的地方，会自动添加一个where字符串
+		并且该标签会自动忽略紧随其后的and或者or -->
+	<!-- <where>
+			<if test="map.userName != null">
+				and user_name like CONCAT(#{map.userName},'%')
+			</if>
+			<if test="map.loginName != null">
+				and login_name like CONCAT(#{map.loginName},'%') 
+			</if>
+		</where> -->
+		
+		<trim prefix="where" prefixOverrides="and|or">
+			<if test="map.userName != null">
+				and user_name like CONCAT(#{map.userName},'%')
+			</if>
+			<if test="map.loginName != null">
+				and login_name like CONCAT(#{map.loginName},'%')
+			</if>
+			
+			<if test="map.age != null">
+			
+			<!-- <![CDATA[]]> 配置文件中的静态语句块，
+			它的作用是讲SQL语句中<符号，定义为一个普通的字符串
+			将它不再作为标签的开始与结束标记 -->
+			
+				<![CDATA[
+					and age < #{map.age}
+			]]>
+				
+			</if>
+		</trim>
+	</sql>
+
+	<select id="getUserInfoById" resultMap="userMap">
+		select * from t_user where id = #{id}
+	</select>
+	
+	<select id="getUserByLoginNameAndPwd" resultMap="userMap">
+		<!-- select user_name from t_user where login_name = #{loginName} and password = #{pwd}
+	 -->
+	 
+	 	<!-- switch case default 在mybatis中的用法 -->
+		select user_name from t_user 
+		<where>
+			<choose>
+				<when test="loginName != null">
+					and login_name = #{loginName}
+				</when>
+				<when test="pwd != null">
+					and password = #{pwd}
+				</when>
+				<otherwise>
+					1=1
+				</otherwise>
+			</choose>
+		</where>
+	</select>
+
+	<!-- map中取值，依旧还是采用#或者$,只是取值是采用：map.键的方式 -->
+	
+	<!-- resultType与resultMap一样，都是用来映射返回结果集与对象之间的关系
+	只不过resultType需要结果集中字段名与对象的属性名保持名称一致 -->
+	<select id="queryUserListByMap" resultType="UserInfo">
+		select login_name as loginName,password as pwd from t_user where user_name like CONCAT('%',#{map.userName},'%') 
+		and age = #{map.age}
+	</select>
+
+	
+
+
+</mapper>
