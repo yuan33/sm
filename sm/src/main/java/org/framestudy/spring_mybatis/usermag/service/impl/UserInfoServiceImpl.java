@@ -10,18 +10,18 @@ import org.framestudy.spring_mybatis.usermag.beans.UserInfo;
 import org.framestudy.spring_mybatis.usermag.dao.IUserDao;
 import org.framestudy.spring_mybatis.usermag.service.IUserService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+//import org.springframework.transaction.annotation.Isolation;
+//import org.springframework.transaction.annotation.Propagation;
+//import org.springframework.transaction.annotation.Transactional;
 
-@Transactional(readOnly=true)
+//@Transactional(readOnly=true)
 @Service
 public class UserInfoServiceImpl implements IUserService {
 
 	@Resource
 	private IUserDao userDaoImpl;
 	
-	@Transactional(readOnly=false,isolation=Isolation.REPEATABLE_READ,propagation=Propagation.REQUIRED,rollbackFor=Exception.class)
+//	@Transactional(readOnly=false,isolation=Isolation.REPEATABLE_READ,propagation=Propagation.REQUIRED,rollbackFor=Exception.class)
 	public int saveUserInfo(UserInfo user) {
 		// TODO Auto-generated method stub
 		int rows = userDaoImpl.saveUserInfo(user);
@@ -29,13 +29,13 @@ public class UserInfoServiceImpl implements IUserService {
 		return rows;
 	}
 	
-	@Transactional(readOnly=false,isolation=Isolation.REPEATABLE_READ,propagation=Propagation.REQUIRED,rollbackFor=Exception.class)
+//	@Transactional(readOnly=false,isolation=Isolation.REPEATABLE_READ,propagation=Propagation.REQUIRED,rollbackFor=Exception.class)
 	public int updateUserInfo(UserInfo user) {
 		// TODO Auto-generated method stub
 		return userDaoImpl.updateUserInfo(user);
 	}
 
-	@Transactional(readOnly=false,isolation=Isolation.REPEATABLE_READ,propagation=Propagation.REQUIRED,rollbackFor=Exception.class)
+//	@Transactional(readOnly=false,isolation=Isolation.REPEATABLE_READ,propagation=Propagation.REQUIRED,rollbackFor=Exception.class)
 	public int deleteUserInfo(Long id) {
 		// TODO Auto-generated method stub
 		return userDaoImpl.deleteUserInfo(id);
@@ -56,13 +56,13 @@ public class UserInfoServiceImpl implements IUserService {
 		return userDaoImpl.queryUserListByMap(map);
 	}
 	
-	@Transactional(readOnly=false,isolation=Isolation.REPEATABLE_READ,propagation=Propagation.REQUIRED,rollbackFor=Exception.class)
+//	@Transactional(readOnly=false,isolation=Isolation.REPEATABLE_READ,propagation=Propagation.REQUIRED,rollbackFor=Exception.class)
 	public int batchSaveUserInfo(List<UserInfo> user) {
 		// TODO Auto-generated method stub
 		return userDaoImpl.batchSaveUserInfo(user);
 	}
 
-	@Transactional(readOnly=false,isolation=Isolation.REPEATABLE_READ,propagation=Propagation.REQUIRED,rollbackFor=Exception.class)
+//	@Transactional(readOnly=false,isolation=Isolation.REPEATABLE_READ,propagation=Propagation.REQUIRED,rollbackFor=Exception.class)
 	public int batchDeleteUserInfo(List<UserInfo> user) {
 		// TODO Auto-generated method stub
 		return userDaoImpl.batchDeleteUserInfo(user);

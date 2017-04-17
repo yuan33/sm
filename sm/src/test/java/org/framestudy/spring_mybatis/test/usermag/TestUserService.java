@@ -130,7 +130,7 @@ public class TestUserService {
 	
 	@Test
 	public void testUpdateUserInfo(){
-		UserInfo user = new UserInfo(25L, "长大了", "123456", 18);
+		UserInfo user = new UserInfo(25L, "有多大", "123456", 18);
 		userInfoServiceImpl.updateUserInfo(user);
 		
 		System.out.println(user);
